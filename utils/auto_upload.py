@@ -20,7 +20,6 @@ import utils.commen_component as commen_component
 CONFIG_DL_PATH = './conf/config_dl.json'
 USER_BAK_TASK_PATH = './conf/bak_task.pickle'
 
-
 class AutoUploadPage(tk.Frame):  # 继承Frame类
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -147,7 +146,7 @@ class AutoUploadPage(tk.Frame):  # 继承Frame类
                     # 判断有没有下载完
                     torrent = self.qb.get_torrent(infohash=hash_info)
                     if torrent['completion_date'] == -1:
-                        self.qb.delete_permanently(hash_info)
+                        self.qb.torrents_delete(hashes=hash_info)
                 try:
                     commen_component.stop_thread(chosen_task)
                 except ValueError:
@@ -395,7 +394,7 @@ class AutoUploadPage(tk.Frame):  # 继承Frame类
             chosen_task = self.task_dict[detail_link]
             hash_info = chosen_task.get_hash_info()
             if chosen_task.get_statu() != '发布成功' and hash_info:
-                self.qb.delete_permanently(hash_info)
+                self.qb.torrents_delete(hashes=hash_info)
             else:
                 return '任务还未开始或已经完成'
             try:

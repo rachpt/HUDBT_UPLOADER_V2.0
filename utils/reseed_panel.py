@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # Author:tomorrow505
 
-import tkinter as tk
-from tkinter import Label, E, Entry, StringVar, Button
+import re
 import os
-from os.path import getsize, join
+import json
 import time
+import tkinter as tk
 import configparser
+from time import sleep
+from tkinter import Label, E, Entry, StringVar, Button
+from os.path import getsize, join
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
-import json
-from time import sleep
-import re
 
 import utils.my_bencode as my_bencode
 

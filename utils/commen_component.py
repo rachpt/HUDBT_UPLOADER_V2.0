@@ -12,6 +12,9 @@ import subprocess
 import utils.my_bencode as my_bencode
 import utils.html_handler as html_handler
 
+from platform import system
+is_win = 'windows' in system().lower()
+
 AUTHOR = 'tomorrow505'
 VERSION = 'V2.0'
 THANK_LIST = 'Rach & Lancesaber & Rhilip'
@@ -166,8 +169,8 @@ def parser_torrent(file_path):
                     new_path.append(path.decode('utf-8'))
                 if new_path[-1].endswith(('.mp4', '.mkv', '.avi', '.mov', '.rmvb', '.ts')):
                     biggest = file[b'length']
-                    file_path = '\\'.join(new_path)
-        file_path = file_dir + '\\' + file_path
+                    file_path = '\\'.join(new_path) if is_win else '/'.join(new_path)
+        file_path = file_dir + '\\' + file_path if is_win else file_dir + '/' + file_path
         return file_path
     else:
         return file_dir

@@ -6,21 +6,21 @@ from utils import auto_upload, hand_upload, login, commen_component, config_dl, 
 import tkinter as tk
 import os
 import threading
-from time import sleep
+import socketserver
 import time
+from time import sleep
 from tkinter import messagebox
 from PIL import Image, ImageTk
-import socketserver
 
 from platform import system
+is_win = 'windows' in system().lower()
 # 获取屏幕大小
-os = system().lower()
-if 'windows' in os:
-    import win32api
+if is_win:
+    import win32api  # 这玩意儿是不是可以去掉？
     import win32con
     X = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
     Y = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-elif 'linux' in os:
+else:
     root = tk.Tk()
     X = root.winfo_screenwidth()
     Y = root.winfo_screenheight()
@@ -42,13 +42,14 @@ class MainPage(tk.Tk):
         self.is_server_open = False
         self.t = 'recorder_server'
 
-        self.geometry('%dx%d+%d+%d' % (750, 600, (X - 750) / 2, (Y - 650) / 2))  # 设置窗口大小
+        # 设置窗口大小
+        self.geometry('%dx%d+%d+%d' % (750, 600, (X - 750) / 2, (Y - 650) / 2))
         self.resizable(False, False)
         self.title('HUDBT-UPLOADER-%s' % self.version)
-        if 'windows' in os:
+        if is_win:
             self.img_path = './docs/bitbug_favicon.ico'
             self.iconbitmap('', self.img_path)
-        elif 'linux' in os:
+        else:
             pass
             # img_path = tk.PhotoImage(file='./docs/bitbug_favicon.gif')
             # self.call('wm', 'iconphoto', self._w, img_path)
@@ -63,8 +64,10 @@ class MainPage(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        for F in (config_sites.ConfigSitesPage, config_dl.ConfigDlPage, auto_upload.AutoUploadPage,
-                  hand_upload.HandUploadPage, login.LoginPage, config_rss.RssPage, reseed_panel.ReseedPage):
+        for F in (config_sites.ConfigSitesPage, config_dl.ConfigDlPage,
+                  auto_upload.AutoUploadPage, hand_upload.HandUploadPage,
+                  login.LoginPage, config_rss.RssPage,
+                  reseed_panel.ReseedPage):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -133,7 +136,8 @@ class MainPage(tk.Tk):
                 try:
                     ip = self.config_dl['server_ip']
                     port = self.config_dl['server_port']
-                    self.t = threading.Thread(target=self.open_server, args=(ip, int(port)))
+                    self.t = threading.Thread(target=self.open_server,
+                                              args=(ip, int(port)))
                     self.t.start()
                     self.is_server_open = True
 
@@ -219,7 +223,8 @@ class MainPage(tk.Tk):
             tk.messagebox.showerror('错误', '尚未配置缓存文件目录！！')
             return
         try:
-            for pathdir in [self.config_dl['img_path'], self.config_dl['cache_path']]:
+            for pathdir in [self.config_dl['img_path'],
+                            self.config_dl['cache_path']]:
                 os.chdir(pathdir)
                 filelist = list(os.listdir())
                 for file in filelist:
@@ -294,22 +299,26 @@ class MainPage(tk.Tk):
             label = tk.Label(top1, text='微信扫一扫吧@_@.', font=("Helvetica", 11))
             label.pack()
             top1.wm_geometry(
-                '%dx%d+%d+%d' % (image.width, image.height + 30, (X - image.width) / 2, (Y - image.height - 30) / 2))
+                '%dx%d+%d+%d' % (image.width, image.height + 30,
+                                 (X - image.width) / 2,
+                                 (Y - image.height - 30) / 2))
             top1.wm_attributes('-topmost', 1)
             top1.mainloop()
 
     def delete_torrents_over_time(self):
         hash_list = []
         now = int(time.time())
-        torrents = self.qb.torrents()
+        torrents = self.qb.torrents_info()
         for torrent in torrents:
             d = torrent['completion_on']
             if now - int(d) > 60*60*24*30 and torrent['tags'] != '保留':
                 hash_list.append(torrent['hash'])
         if len(hash_list):
-            result = tk.messagebox.askokcancel('提示', '是否删除超时的%d个种子?' % len(hash_list))
+            result = tk.messagebox.askokcancel('提示',
+                                               '是否删除超时的%d个种子?' 
+                                               % len(hash_list))
             if result:
-                self.delete_permanently(hash_list)
+                self.qb.torrents_delete(hashes=hash_list)
 
 
 if __name__ == "__main__":
@@ -317,3 +326,4 @@ if __name__ == "__main__":
     app.protocol("WM_DELETE_WINDOW", app.call_back)
     app.mainloop()
     commen_component.kill_myself()
+

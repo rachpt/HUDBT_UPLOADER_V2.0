@@ -16,6 +16,10 @@ import utils.get_media_info as get_media_info
 import utils.autoseed_methods as autoseed_methods
 import utils.html_handler as html_handler
 
+
+from platform import system
+is_win = 'windows' in system().lower()
+
 TITLE_FONT = ("Helvetica", 18, "bold")
 type_dict = {
     "请选择": 0,
@@ -209,7 +213,7 @@ class HandUploadPage(tk.Frame):
                 self.raw_info['download_path'] = self.var_video_dir
                 file_path = commen_component.parser_torrent(self.raw_info['torrent_path'])
                 self.video_path = os.path.join(self.var_video_dir.get(), file_path)
-                video_name = self.video_path.split('\\')[-1]
+                video_name = self.video_path.split('\\')[-1] if is_win else self.video_path.split('/')[-1]
                 try:
                     video_info = get_media_info.get_video_info(self.video_path)
                 except Exception as exc:

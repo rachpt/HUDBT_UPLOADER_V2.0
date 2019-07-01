@@ -2,11 +2,11 @@
 # Author:tomorrow505
 
 
+import os
+import json
 import tkinter as tk
 from tkinter import Label, Entry, Button, StringVar, messagebox, LEFT
 from tkinter.filedialog import askdirectory
-import os
-import json
 import utils.commen_component as commen_component
 
 CONFIG_DL_PATH = './conf/config_dl.json'

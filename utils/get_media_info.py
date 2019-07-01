@@ -8,6 +8,8 @@ import requests
 import json
 from pymediainfo import MediaInfo
 
+from platform import system
+is_win = 'windows' in system().lower()
 
 # 这段写得不好，可以改，懒得改了
 def get_video_info(video_file):
@@ -149,20 +151,22 @@ def get_picture(file_loc, img_loc):
         midle = start + i * step
         time.append(change_to_ss(midle))
     # print('正在截图……')
+    nul='NUL' if is_win else '/dev/null'
     for i in range(12):
-        base_command = 'ffmpeg -ss {time} -i "{file}" -vframes 1 -y -vf "scale=500:-1" "out-{i}".jpg 2> NUL'
-        ffmpeg_sh = base_command.format(time=time[i], file=file_loc, i=i)
+        base_command = 'ffmpeg -ss {time} -i "{file}" -vframes 1 -y -vf "scale=500:-1" "out-{i:03d}".jpg 2> {nul}'
+        ffmpeg_sh = base_command.format(time=time[i], file=file_loc,
+                                        i=i, nul=nul)
         subprocess.call(ffmpeg_sh, shell=True)
         # os.system(ffmpeg_sh)
     # print('正在合成图片……')
     set_par = 'tile=3x4:nb_frames=0:padding=5:margin=5:color=random'
-    base_command = 'ffmpeg -i "out-%d.jpg" -y -filter_complex "{set}" "{img_loc}" 2> NUL'.format(
-        set=set_par, img_loc=img_loc,)
+    base_command = 'ffmpeg -i "out-%03d.jpg" -y -filter_complex "{set}" "{img_loc}" 2> {nul}'.format(
+        set=set_par, img_loc=img_loc, nul=nul)
     subprocess.call(base_command, shell=True)
     # os.system(base_command)
 
     for i in range(12):
-        os.remove('out-{i}.jpg'.format(i=i))
+        os.remove('out-{i:03d}.jpg'.format(i=i))
 
     data = {
         'smfile': open(img_loc, "rb"),

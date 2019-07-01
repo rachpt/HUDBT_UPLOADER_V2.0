@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 # Author:tomorrow505
 
-
-from time import sleep
 import re
 import requests
 import os
 import threading
 import shutil
+from time import sleep
 from urllib.parse import unquote
 
 import utils.get_media_info as get_media_info
 import utils.html_handler as html_handler
 import utils.my_bencode as my_bencode
 import utils.commen_component as commen_component
+
+
+from platform import system
+is_win = 'windows' in system().lower()
 
 CONFIG_SITE_PATH = './conf/config_sites.json'
 
@@ -151,7 +154,7 @@ class AutoSeed (threading.Thread):
         if not self.raw_info['descr_rss']:
             if self.raw_info['douban_info']:
                 try:
-                    video_name = abs_file_path.split('\\')[-1]
+                    video_name = abs_file_path.split('\\')[-1] if is_win else abs_file_path.split('/')[-1]
                     img_name = video_name + '.jpg'
                     img_name = re.sub('^\[.*?\]\.|[\u4e00-\u9fff]', '', img_name)
                     abs_img_path = self.config_dl['img_path'] + '/' + img_name

@@ -3,12 +3,13 @@
 
 
 import tkinter as tk
-from utils import commen_component
 from selenium import webdriver
 import json
 import os
 from tkinter import ttk, StringVar, Frame, Scrollbar, LEFT, RIGHT, Y, Entry, Label, Button
 from time import sleep
+
+import utils.commen_component as commen_component
 
 USER_DATA_PATH = './conf/config_chrome.json'
 CONFIG_SITE_PATH = './conf/config_sites.json'
@@ -331,8 +332,4 @@ class ConfigSitesPage(tk.Frame):
                     self.comboxlist.current(0)
         except Exception:
             pass
-
-
-
-
 
