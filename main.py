@@ -9,13 +9,20 @@ from time import sleep
 import time
 from tkinter import messagebox
 from PIL import Image, ImageTk
-import win32api
-import win32con
 import socketserver
 
 # 获取屏幕大小
-X = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-Y = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+from platform import system
+os = system().lower()
+if 'windows' in os:
+    import win32api
+    import win32con
+    X = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+    Y = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+elif 'linux' in os:
+    root = tk.Tk()
+    X = root.winfo_screenwidth()
+    Y = root.winfo_screenheight()
 
 
 class MainPage(tk.Tk):
@@ -37,9 +44,14 @@ class MainPage(tk.Tk):
         self.geometry('%dx%d+%d+%d' % (750, 600, (X - 750) / 2, (Y - 650) / 2))  # 设置窗口大小
         self.resizable(False, False)
         self.title('HUDBT-UPLOADER-%s' % self.version)
-        self.img_path = './docs/bitbug_favicon.ico'
+        if 'windows' in os:
+            self.img_path = './docs/bitbug_favicon.ico'
+            self.iconbitmap('', self.img_path)
+        elif 'linux' in os:
+            pass
+            # img_path = tk.PhotoImage(file='./docs/bitbug_favicon.gif')
+            # self.call('wm', 'iconphoto', self._w, img_path)
         # print(self.img_path)
-        self.iconbitmap('', self.img_path)
         self.frames = {}
         self.config_dl = commen_component.load_config_dl()
         self.create_page()

@@ -11,8 +11,10 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 import json
 from time import sleep
-import my_bencode
 import re
+
+import utils.my_bencode as my_bencode
+
 str_list = ['TiB', 'GiB', 'MiB', 'KB', 'B']
 USER_DATA_PATH = './conf/config_chrome.json'
 
@@ -115,12 +117,12 @@ class ReseedPage(tk.Frame):
             abs_path = parser[section]['abs_path']
             full_name = parser[section]['full_name']
             download_torrent_by_keyword(keyword=keyword, driver=driver_, size=size)
-            
-			# 发现有的种子比较大，下载慢，所以要求等待下载完
-			sleep(2)
-            
+
+	    # 发现有的种子比较大，下载慢，所以要求等待下载完
+            sleep(2)
+
             while True:
-			    torrents = os.listdir(self.torrent_path)
+                torrents = os.listdir(self.torrent_path)
                 if all(torrent.endswith('.torrent') for torrent in torrents):
                     break
                 else:

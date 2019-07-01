@@ -5,11 +5,12 @@ import re
 import json
 import inspect
 import requests
-import html_handler
 import ctypes
-import my_bencode
 import psutil
 import subprocess
+
+import utils.my_bencode
+import utils.html_handler
 
 AUTHOR = 'tomorrow505'
 VERSION = 'V2.0'

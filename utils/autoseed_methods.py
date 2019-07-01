@@ -4,15 +4,16 @@
 
 from time import sleep
 import re
-import html_handler
-import my_bencode
 import requests
 import os
-from utils import commen_component
-import get_media_info
 import threading
 import shutil
 from urllib.parse import unquote
+
+import utils.get_media_info as get_media_info
+import utils.html_handler as html_handler
+import utils.my_bencode as my_bencode
+import utils.commen_component as commen_component
 
 CONFIG_SITE_PATH = './conf/config_sites.json'
 
@@ -226,7 +227,7 @@ class AutoSeed (threading.Thread):
             filename = '%s_%s_%s' % (filename, pt_site['abbr'], tid)
         
         self.raw_info['filename'] = filename
-		origin_file_path = self.config_dl['cache_path'] + '\\%s.torrent' % filename
+        origin_file_path = self.config_dl['cache_path'] + '\\%s.torrent' % filename
 
         # back_file_path = self.config_dl['cache_path'] + '\\%s_back.torrent' % filename
 

@@ -10,8 +10,9 @@ import re
 from bs4 import BeautifulSoup
 import requests
 from html2bbcode.parser import HTML2BBCode
-import get_douban_info
 from urllib.parse import unquote
+
+import utils.get_douban_info
 
 judge_list = ['RELEASE NAME', 'RELEASE DATE', 'VIDEO CODE', 'FRAME RATE', 'AUDIO', 'SOURCE', 'BIT RATE',
               'RESOLUTION', 'SUBTITLES', 'FRAMERATE', 'BITRATE', '[IMG]', '视频编码', '帧　　率', '译　　名',

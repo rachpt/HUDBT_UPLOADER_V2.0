@@ -9,11 +9,12 @@ from tkinter.filedialog import askdirectory
 import tkinter.scrolledtext
 import re
 import os
-import commen_component
-import get_douban_info
-import get_media_info
-import autoseed_methods
-import html_handler
+
+import utils.commen_component as commen_component
+import utils.get_douban_info as get_douban_info
+import utils.get_media_info as get_media_info
+import utils.autoseed_methods as autoseed_methods
+import utils.html_handler as html_handler
 
 TITLE_FONT = ("Helvetica", 18, "bold")
 type_dict = {

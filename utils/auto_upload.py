@@ -7,13 +7,14 @@ from tkinter.ttk import Treeview
 from tkinter import Scrollbar, Frame, StringVar, LEFT, RIGHT, Y, messagebox
 import datetime
 import webbrowser
-from utils import commen_component
 import threading
 import time
 from time import sleep
-import autoseed_methods
-import get_rss_info
 import pickle
+
+import utils.autoseed_methods as autoseed_methods
+import utils.get_rss_info as get_rss_info
+import utils.commen_component as commen_component
 
 
 CONFIG_DL_PATH = './conf/config_dl.json'
@@ -213,7 +214,7 @@ class AutoUploadPage(tk.Frame):  # 继承Frame类
     def add_rss_task(self):
         while True:
             self.rsshandler.change_refresh_time(self.config_dl['refresh_time'])
-			self.rsshandler.now_time = ''
+            self.rsshandler.now_time = ''
             entries_list = self.rsshandler.get_entries(self.config_dl['Max_Size'])
             for item in entries_list:
                 detail_link = item['link']
