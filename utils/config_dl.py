@@ -7,7 +7,7 @@ from tkinter import Label, Entry, Button, StringVar, messagebox, LEFT
 from tkinter.filedialog import askdirectory
 import os
 import json
-from utils import commen_component
+import utils.commen_component as commen_component
 
 CONFIG_DL_PATH = './conf/config_dl.json'
 

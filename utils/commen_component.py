@@ -9,8 +9,8 @@ import ctypes
 import psutil
 import subprocess
 
-import utils.my_bencode
-import utils.html_handler
+import utils.my_bencode as my_bencode
+import utils.html_handler as html_handler
 
 AUTHOR = 'tomorrow505'
 VERSION = 'V2.0'

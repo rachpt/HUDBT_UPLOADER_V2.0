@@ -2,7 +2,7 @@
 # Author:tomorrow505
 
 import re
-import utils.gen
+import utils.gen as gen
 
 
 def get_douban_descr(url):

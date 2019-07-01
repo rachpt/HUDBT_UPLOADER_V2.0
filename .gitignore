@@ -112,3 +112,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# KDE folder
+*.directory
+
+# conf
+*.json
+*.pickle

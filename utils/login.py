@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author:tomorrow505
 from tkinter import StringVar, Label, E, Button
-from qbittorrent import Client
+from qbittorrentapi import Client
 import pickle
 import tkinter as tk
 
@@ -70,11 +70,11 @@ class LoginPage(tk.Frame):  # 继承Frame类
             port = self.var_port.get()
             name = self.var_name.get()
             pwd = self.var_pwd.get()
-            qb = Client('http://{ip}:{port}/'.format(ip=ip, port=port))
-            qb.login(name, pwd)
+            qb = Client(host='http://{ip}:{port}'.format(ip=ip, port=port),
+                        username=name, password=pwd)
 
             # 测试是否通过
-            qb.torrents()
+            qb.app_version()
 
             self.controller.qb = qb
             self.controller.login_statu = True

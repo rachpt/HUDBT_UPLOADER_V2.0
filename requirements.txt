@@ -1,5 +1,5 @@
-qbittorrent
-PIL
+qbittorrent-api
+PIL  #  Pillow
 feedparser
 bencode
 requests

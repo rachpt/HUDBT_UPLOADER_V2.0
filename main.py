@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author:tomorrow505
 
@@ -11,8 +12,8 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import socketserver
 
-# 获取屏幕大小
 from platform import system
+# 获取屏幕大小
 os = system().lower()
 if 'windows' in os:
     import win32api
@@ -23,7 +24,7 @@ elif 'linux' in os:
     root = tk.Tk()
     X = root.winfo_screenwidth()
     Y = root.winfo_screenheight()
-
+    root.destroy()
 
 class MainPage(tk.Tk):
 
