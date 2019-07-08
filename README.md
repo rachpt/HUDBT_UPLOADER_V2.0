@@ -2,6 +2,11 @@
 
 测试环境：win10 + python3.6.4  + qbit4.1.5
 
+支持的站点： 
++ 教育网：北邮人、北洋园、南洋、蒲公英、麦田、葡萄
++ 公网：TTG、HDChina、MTeam、天空、HDHome、朋友、OurBits
+
+
 更新记录：copy自HUDBT：<https://hudbt.hust.edu.cn/details.php?id=142028&hit=1> 
 
 2019-06-12：自反馈
@@ -43,3 +48,7 @@ ut转qbit，1000多种子，休息几天。
 2019-06-23：部分种子下载完发布失败，已修复。发布之后立即删除缓存种子。
 
 2019-06-25：frds出现了checking your browser before accessing ... anti robot 策略。还没想好怎么解决，暂不支持了~
+
+2019-07-04：添加支持hdhome，测试中…… 
+
+2019-07-05：添加支持麦田，测试中……
