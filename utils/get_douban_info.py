@@ -2,7 +2,7 @@
 # Author:tomorrow505
 
 import re
-import utils.gen as gen
+from . import gen
 
 
 def get_douban_descr(url):
@@ -42,4 +42,4 @@ def get_douban_link(url):
 
 
 # if __name__ == "__main__":
-#     print(get_douban_descr('https://movie.douban.com/subject/30474718/'))
+    # print(get_douban_descr('https://movie.douban.com/subject/30474718/'))

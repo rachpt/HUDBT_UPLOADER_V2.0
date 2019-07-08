@@ -9,14 +9,11 @@ import shutil
 from time import sleep
 from urllib.parse import unquote
 
-import utils.get_media_info as get_media_info
-import utils.html_handler as html_handler
-import utils.my_bencode as my_bencode
-import utils.commen_component as commen_component
+from . import get_media_info
+from . import html_handler
+from . import my_bencode
+from . import commen_component
 
-
-from platform import system
-is_win = 'windows' in system().lower()
 
 CONFIG_SITE_PATH = './conf/config_sites.json'
 
@@ -40,6 +37,7 @@ extend_descr_after = """
 class AutoSeed (threading.Thread):
 
     pt_sites = commen_component.load_pt_sites()
+    is_win = commen_component.is_win
 
     def __init__(self, qb, origin_url: str or dict or tuple, config_dl):
         super(AutoSeed, self).__init__()
@@ -154,7 +152,7 @@ class AutoSeed (threading.Thread):
         if not self.raw_info['descr_rss']:
             if self.raw_info['douban_info']:
                 try:
-                    video_name = abs_file_path.split('\\')[-1] if is_win else abs_file_path.split('/')[-1]
+                    video_name = abs_file_path.split('\\')[-1] if self.is_win else abs_file_path.split('/')[-1]
                     img_name = video_name + '.jpg'
                     img_name = re.sub('^\[.*?\]\.|[\u4e00-\u9fff]', '', img_name)
                     abs_img_path = self.config_dl['img_path'] + '/' + img_name
@@ -230,7 +228,10 @@ class AutoSeed (threading.Thread):
             filename = '%s_%s_%s' % (filename, pt_site['abbr'], tid)
         
         self.raw_info['filename'] = filename
-        origin_file_path = self.config_dl['cache_path'] + '\\%s.torrent' % filename
+        if self.is_win:
+            origin_file_path = self.config_dl['cache_path'] + '\\%s.torrent' % filename
+        else:
+            origin_file_path = self.config_dl['cache_path'] + '/%s.torrent' % filename
 
         # back_file_path = self.config_dl['cache_path'] + '\\%s_back.torrent' % filename
 
@@ -277,10 +278,8 @@ class AutoSeed (threading.Thread):
         return abs_file_dir
 
     def start_download(self, torrent_path, dl_path, flag):
-        torrent_file = open(torrent_path, 'rb')
-        self.qb.download_from_file(torrent_file, savepath=dl_path, category=self.raw_info['category'],
-                                   skip_checking=flag)
-        torrent_file.close()
+        self.qb.torrents_add(torrent_files=torrent_path, savepath=dl_path, category=self.raw_info['category'],
+                                   is_skip_checking=flag)
 
     def upload_to_hudbt(self, raw_info, origin_torrent_path, params=None, files=None):
 
@@ -418,12 +417,15 @@ class AutoSeed (threading.Thread):
     # 修复发布失败的bug
     def backup_torrent(self, origin_torrent_path):
 
-        origin_torrent_name = origin_torrent_path.split('\\')[-1]
+        origin_torrent_name = origin_torrent_path.split('\\')[-1] if AutoSeed.is_win else origin_torrent_path.split('/')[-1]
         new_filename = re.sub('\.torrent', '', origin_torrent_name)
         new_filename = re.sub(r'^\[.{1,10}?\]|.mp4$|.mkv$|\[|\]|[\u4e00-\u9fff]|[^-\.@￡(A-Za-z0-9)]', '',
                               new_filename)
         new_filename = ' '.join(new_filename.split('.')).strip()
-        back_up_path = self.config_dl['cache_path']+'\\%s_back.torrent' % new_filename
+        if AutoSeed.is_win:
+            back_up_path = self.config_dl['cache_path']+'\\%s_back.torrent' % new_filename
+        else:
+            back_up_path = self.config_dl['cache_path']+'/%s_back.torrent' % new_filename
         shutil.copyfile(origin_torrent_path, back_up_path)
 
         return back_up_path

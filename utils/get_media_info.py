@@ -8,8 +8,8 @@ import requests
 import json
 from pymediainfo import MediaInfo
 
-from platform import system
-is_win = 'windows' in system().lower()
+from . commen_component import is_win as is_win
+
 
 # 这段写得不好，可以改，懒得改了
 def get_video_info(video_file):

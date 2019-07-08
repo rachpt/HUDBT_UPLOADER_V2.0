@@ -9,7 +9,7 @@ import os
 from tkinter import ttk, StringVar, Frame, Scrollbar, LEFT, RIGHT, Y, Entry, Label, Button
 from time import sleep
 
-import utils.commen_component as commen_component
+from . import commen_component
 
 USER_DATA_PATH = './conf/config_chrome.json'
 CONFIG_SITE_PATH = './conf/config_sites.json'
@@ -257,7 +257,10 @@ class ConfigSitesPage(tk.Frame):
                     # print(user_data)
                     options = webdriver.ChromeOptions()
                     options.add_argument(user_data)
-                    driver = webdriver.Chrome(executable_path='chromedriver.exe', options=options)
+                    if commen_component.is_win:
+                        driver = webdriver.Chrome(executable_path='chromedriver.exe', options=options)
+                    else:
+                        driver = webdriver.Chrome(executable_path='chromedriver', options=options)
 
                     site_all = self.tree.get_children()
                     for site in site_all:

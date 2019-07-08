@@ -5,9 +5,10 @@
 import os
 import json
 import tkinter as tk
-from tkinter import Label, Entry, Button, StringVar, messagebox, LEFT
+from tkinter import Label, Entry, Button, StringVar
 from tkinter.filedialog import askdirectory
-import utils.commen_component as commen_component
+
+from . import commen_component
 
 CONFIG_DL_PATH = './conf/config_dl.json'
 
