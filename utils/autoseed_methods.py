@@ -36,6 +36,8 @@ extend_descr_after = """
    [/quote]
 """
 
+reject_keywords = ['禁转', '禁止转载', '謝絕提取壓制轉載', '情色', '色情']
+
 
 class AutoSeed (threading.Thread):
 
@@ -83,7 +85,7 @@ class AutoSeed (threading.Thread):
             return exc
 
         # 认怂，自动转载检查是不是禁转
-        if html.find("禁转") >= 0 or html.find("禁止转载") >= 0:
+        if any([html.find(item) >= 0 for item in reject_keywords]):
             if self.raw_info['up_mode'] == "RSS_MODE":
                 self.statu.append("禁转？请检查")
                 sleep(3)
@@ -225,10 +227,8 @@ class AutoSeed (threading.Thread):
 
         self.raw_info['abbr'] = pt_site['abbr']
         if not filename:
-            filename = '%s_%s_%s' % (self.raw_info['title'], pt_site['abbr'], tid)
-        else:
-            filename = '%s_%s_%s' % (filename, pt_site['abbr'], tid)
-        
+            filename = '%s_%s' % (pt_site['abbr'], tid)
+
         self.raw_info['filename'] = filename
         origin_file_path = self.config_dl['cache_path'] + '\\%s.torrent' % filename
 
