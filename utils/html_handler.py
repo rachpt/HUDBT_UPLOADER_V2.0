@@ -16,11 +16,11 @@ from . import get_douban_info
 
 judge_list = ['RELEASE NAME', 'RELEASE DATE', 'VIDEO CODE', 'FRAME RATE', 'AUDIO', 'SOURCE', 'BIT RATE',
               'RESOLUTION', 'SUBTITLES', 'FRAMERATE', 'BITRATE', '[IMG]', '视频编码', '帧　　率', '译　　名',
-              '主　　演', '海报']  # [IMG]为了留下ourbits图片  视频编码, 帧　　率 保留HDChina， 译名防止把简介用quote框起来 海报是为了保留北邮人的海报
+              '主　　演', '海报', '分辨率']  # [IMG]为了留下ourbits图片  视频编码, 帧　　率 保留HDChina， 译名防止把简介用quote框起来 海报是为了保留北邮人的海报
 
 
 mediainfo_judge = ['RELEASE NAME', 'RELEASE DATE', 'VIDEO CODE', 'FRAME RATE', 'AUDIO', 'SOURCE', 'BIT RATE',
-                   'RESOLUTION', 'SUBTITLES', 'FRAMERATE', 'BITRATE', '视频编码', '帧　　率']
+                   'RESOLUTION', 'SUBTITLES', 'FRAMERATE', 'BITRATE', '视频编码', '帧　　率', '帧　率', '分辨率']
 
 good_team = ('TJUPT', 'MTEAM', 'MPAD', 'HDS', 'HDSPAD', 'NYPT', 'FRDS', 'CHD', 'CHDPAD', 'EPIC', 'DRONES', 'AMIABLE',
              'SPARKS', 'CMCT', 'HDCHINA', 'BEAST', 'WIKI', 'CTRLHD', 'TAYTO', 'DON', 'EBP', 'IDE', 'ZQ', 'HIFI',
@@ -196,16 +196,19 @@ class HtmlHandler:
         self.raw_info['type_'] = get_type_from_info(type_)
 
         # 简介
-        descr = to_bbcode_use_api(str(self.soup.find('div', id='kdescr')))
-        descr = format_descr_cmct(descr)
+        descr = self.soup.find('div', id='kdescr')
+        descr = format_mediainfo(self.soup, descr, mode=0)
+        descr = format_descr(descr)
         self.raw_info['descr'] = descr
 
         # 获取链接和豆瓣信息
         self.get_imdb_douban_link_by_str(descr)
-        douban_info = self.get_douban_info()
-        self.raw_info['douban_info'] = douban_info
+        # douban_info = self.get_douban_info()
+        # self.raw_info['douban_info'] = douban_info
 
         self.raw_info['url'] = self.ref_link['imdb_link']
+
+        self.raw_info['nfo'] = judge_nfo_existed(self.raw_info['descr'])
 
     # HDChina  # 信任的站点
     def parser_html_hdchina(self):
@@ -1023,18 +1026,6 @@ def format_descr_byr(descr):
     return descr
 
 
-def format_descr_cmct(descr):
-    tmp = []
-    descr = descr.split('\n')
-    for line in descr:
-        if len(line.strip()) == 0:
-            pass
-        else:
-            tmp.append(line)
-    descr = '\n'.join(tmp[3:-7])
-    return descr
-
-
 def get_hdchina_download_url(html):
     soup = BeautifulSoup(html, 'lxml')
     # print(html)
@@ -1112,7 +1103,7 @@ def format_descr_tjupt(descr):
         '[img]https://www.tjupt.org/attachments')
     descr = descr.replace(
         'https://www.tjupt.org/jump_external.php?ext_url=', '')
-    descr = descr.replace('/jump_external.php?ext_url=', '')
+    descr = re.sub('/jump_external.php?[\s\S]+?ext_url=', '', descr)
     descr = descr.replace('%3A', ':')
     descr = descr.replace('%2F', '/')
 
