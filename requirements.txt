@@ -10,7 +10,7 @@ psutil
 pymediainfo
 
 # windows
-pypiwin32
+#pypiwin32
 
 # gen.py
 lxml
