@@ -13,19 +13,6 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 
 
-# 获取屏幕大小
-if commen_component.is_win:
-    import win32api  # 这玩意儿是不是可以去掉？
-    import win32con
-    X = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-    Y = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-else:
-    root = tk.Tk()
-    X = root.winfo_screenwidth()
-    Y = root.winfo_screenheight()
-    root.destroy()
-
-
 class MainPage(tk.Tk):
 
     auto_page = ''
@@ -41,18 +28,16 @@ class MainPage(tk.Tk):
         self.login_statu = False
         self.is_server_open = False
         self.t = 'recorder_server'
-        self.is_win = commen_component.is_win
 
         # 设置窗口大小
-        self.geometry('%dx%d+%d+%d' % (750, 600, (X - 750) / 2, (Y - 650) / 2))
+        self.X = self.winfo_screenwidth()
+        self.Y = self.winfo_screenheight()
+        self.geometry('%dx%d+%d+%d' % (750, 620, (self.X - 750) / 2, (self.Y - 650) / 2))
         self.resizable(False, False)
         self.title('HUDBT-UPLOADER-%s' % self.version)
-        if self.is_win:
-            self.img_path = './docs/bitbug_favicon.ico'
-            self.iconbitmap('', self.img_path)
-        else:
-            self.img_path = './docs/bitbug_favicon.gif'
-            self.call('wm', 'iconphoto', self._w, tk.PhotoImage(file=self.img_path))
+
+        self.img_path = './docs/bitbug_favicon.gif'
+        self.call('wm', 'iconphoto', self._w, tk.PhotoImage(file=self.img_path))
 
         self.frames = {}
         self.config_dl = commen_component.load_config_dl()
@@ -300,8 +285,8 @@ class MainPage(tk.Tk):
             label.pack()
             top1.wm_geometry(
                 '%dx%d+%d+%d' % (image.width, image.height + 30,
-                                 (X - image.width) / 2,
-                                 (Y - image.height - 30) / 2))
+                                 (self.X - image.width) / 2,
+                                 (self.Y - image.height - 30) / 2))
             top1.wm_attributes('-topmost', 1)
             top1.mainloop()
 

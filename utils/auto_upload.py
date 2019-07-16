@@ -12,9 +12,9 @@ import time
 from time import sleep
 import pickle
 
-import utils.autoseed_methods as autoseed_methods
-import utils.get_rss_info as get_rss_info
-import utils.commen_component as commen_component
+from . import autoseed_methods
+from . import get_rss_info
+from . import commen_component
 
 
 CONFIG_DL_PATH = './conf/config_dl.json'

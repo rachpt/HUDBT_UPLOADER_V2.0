@@ -119,3 +119,6 @@ dmypy.json
 # conf
 *.json
 *.pickle
+
+# Pycharm
+.idea/

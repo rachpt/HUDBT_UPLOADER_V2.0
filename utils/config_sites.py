@@ -11,7 +11,7 @@ from time import sleep
 
 from . import commen_component
 
-USER_DATA_PATH = './conf/config_chrome.json'
+USER_DATA_PATH = './conf/config_browser.json'
 CONFIG_SITE_PATH = './conf/config_sites.json'
 
 hudbt = {
@@ -135,9 +135,18 @@ class ConfigSitesPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
+        self.label_0 = Label(self, text="浏览器:", justify=LEFT)
+        self.web_browser = StringVar()  # 窗体自带的文本，新建一个值
+        self.browser_list = ttk.Combobox(self, font=("Helvetica", 10), textvariable=self.web_browser)  # 初始化
+        self.browser_list["values"] = tuple(['Firefox'] + ['Chrome'])
+        self.browser_list.current(0)
+        if commen_component.is_win:
+            self.user_data_prompt_message = '浏览器用户数据路径：(默认在 user/AppData/Roaming 里面)'
+        else:
+            self.user_data_prompt_message = '浏览器数据路径：(ff: ~/.mozilla/firefox; chrome: ~/.config/chro[e/mium])'
         self.var_user_data = StringVar()
-        self.var_user_data.set('chrome用户数据路径：')
-        self.entry_user_data = Entry(self, textvariable=self.var_user_data, width=58, borderwidth=3)
+        self.var_user_data.set(self.user_data_prompt_message)
+        self.entry_user_data = Entry(self, textvariable=self.var_user_data, width=28, borderwidth=3)
         self.button_2 = Button(self, text="保存配置", command=self.save_user_data)
 
         self.label = Label(self, text="当前可选的站点:", justify=LEFT)
@@ -167,11 +176,14 @@ class ConfigSitesPage(tk.Frame):
         self.create_page()
 
     def create_page(self):
+        self.label_0.place(x=20, y=15, width=50, height=25)
+        self.browser_list.place(x=70, y=15, width=70, height=25)
+        self.entry_user_data.place(x=140, y=15, width=550, height=28)
         self.button_2.place(x=620, y=15, width=100, height=28)
-        self.entry_user_data.place(x=20, y=15, width=580, height=28)
         self.entry_user_data.bind('<FocusIn>', self.user_data_click)
         self.entry_user_data.bind('<FocusOut>', self.user_data_out)
         self.entry_user_data.config(fg='grey')
+
 
         self.label.place(x=0, y=50, width=160, height=25)
         self.label_2.place(x=260, y=48, width=428, height=25)
@@ -250,13 +262,13 @@ class ConfigSitesPage(tk.Frame):
             self.entry_1.config(fg='grey')
 
     def user_data_click(self, event):
-        if self.var_user_data.get() == 'chrome用户数据路径：':
+        if self.var_user_data.get() == self.user_data_prompt_message:
             self.var_user_data.set('')
             self.entry_user_data.config(fg='black')
 
     def user_data_out(self, event):
         if self.var_user_data.get() == '':
-            self.var_user_data.set('chrome用户数据路径：')
+            self.var_user_data.set(self.user_data_prompt_message)
             self.entry_user_data.config(fg='grey')
 
     # 获取cookies
@@ -265,16 +277,30 @@ class ConfigSitesPage(tk.Frame):
             site_chosen = commen_component.load_pt_sites()
             try:
                 with open(USER_DATA_PATH, 'r') as config_file:
-                    user_data = json.load(config_file)['user_data']
+                    json_data = json.load(config_file)
+                    user_data =json_data['user_data']
                     user_data = '/'.join(user_data.split('\\'))
-                    user_data = '--user-data-dir='+user_data
-                    # print(user_data)
-                    options = webdriver.ChromeOptions()
-                    options.add_argument(user_data)
-                    if commen_component.is_win:
-                        driver = webdriver.Chrome(executable_path='chromedriver.exe', options=options)
-                    else:
-                        driver = webdriver.Chrome(executable_path='chromedriver', options=options)
+                    browser = json_data['browser']
+                    print(self.web_browser.get())
+                    if browser == 'Firefox':
+                        options = webdriver.FirefoxOptions()
+                        profile = webdriver.FirefoxProfile(user_data)
+                        if commen_component.is_win:
+                            options.binary_location = 'C:/Program Files/Mozilla Firefox/firefox.exe'
+                            driver = webdriver.Firefox(options=options, executable_path='bin/geckodriver.exe',
+                                                       firefox_profile=profile)
+                        else:
+                            driver = webdriver.Firefox(options=options, executable_path='bin/geckodriver',
+                                                       firefox_profile=profile)
+                    elif browser == 'Chrome':
+                        user_data = '--user-data-dir=' + user_data
+                        options = webdriver.ChromeOptions()
+                        options.add_argument(user_data)
+                        if commen_component.is_win:
+                            options.binary_location = 'C:/Program Files/Google Chrome/chrome.exe'
+                            driver = webdriver.Chrome(executable_path='bin/chromedriver.exe', options=options)
+                        else:
+                            driver = webdriver.Chrome(executable_path='bin/chromedriver', options=options)
 
                     site_all = self.tree.get_children()
                     for site in site_all:
@@ -321,10 +347,10 @@ class ConfigSitesPage(tk.Frame):
 
     # 保存谷歌浏览器用户数据目录
     def save_user_data(self):
-        user_data = {'user_data': self.var_user_data.get()}
+        user_data = {'user_data': self.var_user_data.get(), 'browser': self.web_browser.get()}
         with open(USER_DATA_PATH, 'w') as f:
             json.dump(user_data, f)
-            tk.messagebox.showinfo('提示', '用户数据目录保存成功')
+            tk.messagebox.showinfo('提示', '用户数据目录与浏览器保存成功！\n [添加站点]后点击[获取cookie]即可。')
             # self.var_user_data.set('')
 
     def clear_data(self):

@@ -6,7 +6,6 @@
 '''
 
 
-
 import hashlib
 import bencode
 import os

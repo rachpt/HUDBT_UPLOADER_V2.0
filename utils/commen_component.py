@@ -9,8 +9,8 @@ import ctypes
 import psutil
 import subprocess
 
-import utils.my_bencode as my_bencode
-import utils.html_handler as html_handler
+from . import my_bencode
+from . import html_handler
 
 from platform import system
 is_win = 'windows' in system().lower()

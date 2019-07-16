@@ -8,7 +8,7 @@ import requests
 import json
 from pymediainfo import MediaInfo
 
-from . commen_component import is_win as is_win
+from .commen_component import is_win as is_win
 
 
 # 这段写得不好，可以改，懒得改了
@@ -33,7 +33,7 @@ def get_video_info(video_file):
             audio = get_audio(key)
             mediainfo = mediainfo + '\n' + audio + '\n'
 
-    mediainfo = '[quote=iNFO][font=Courier New]'+mediainfo+'[/font][/quote]'
+    mediainfo = '\n[quote=iNFO][font=Courier New]'+mediainfo+'[/font][/quote]\n'
 
     return mediainfo
 
@@ -42,7 +42,6 @@ def get_general(key):
 
     general = []
     general.append(key['track_type'])
-    general.append(check('UniqueID/String------------------: ', key, 'other_unique_id'))
     general.append(check('Format/String--------------------: ', key, 'format'))
     general.append(check('Format_Version-------------------: ', key, 'format_version'))
     general.append(check('FileSize/String------------------: ', key, 'other_file_size'))
@@ -151,16 +150,20 @@ def get_picture(file_loc, img_loc):
         midle = start + i * step
         time.append(change_to_ss(midle))
     # print('正在截图……')
-    nul='NUL' if is_win else '/dev/null'
+    if is_win:
+        ffmpeg_bin = r'.\bin\ffmpeg.exe'
+        nul = 'NUL'
+    else:
+        ffmpeg_bin = 'ffmpeg'
+        nul = '/dev/null'
     for i in range(12):
-        base_command = 'ffmpeg -ss {time} -i "{file}" -vframes 1 -y -vf "scale=500:-1" "out-{i:03d}".jpg 2> {nul}'
-        ffmpeg_sh = base_command.format(time=time[i], file=file_loc,
-                                        i=i, nul=nul)
+        base_command = ' -ss {time} -i "{file}" -vframes 1 -y -vf "scale=500:-1" "out-{i:03d}".jpg 2> {nul}'
+        ffmpeg_sh = ffmpeg_bin + base_command.format(time=time[i], file=file_loc, i=i, nul=nul)
         subprocess.call(ffmpeg_sh, shell=True)
         # os.system(ffmpeg_sh)
     # print('正在合成图片……')
     set_par = 'tile=3x4:nb_frames=0:padding=5:margin=5:color=random'
-    base_command = 'ffmpeg -i "out-%03d.jpg" -y -filter_complex "{set}" "{img_loc}" 2> {nul}'.format(
+    base_command = ffmpeg_bin + ' -i "out-%03d.jpg" -y -filter_complex "{set}" "{img_loc}" 2> {nul}'.format(
         set=set_par, img_loc=img_loc, nul=nul)
     subprocess.call(base_command, shell=True)
     # os.system(base_command)
@@ -209,4 +212,3 @@ def change_to_ss(number):
     ss = str(ss).zfill(2)
     time = '%s:%s:%s' % (hh, mm, ss)
     return time
-

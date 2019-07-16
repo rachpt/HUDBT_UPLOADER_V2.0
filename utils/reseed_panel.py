@@ -13,10 +13,12 @@ from os.path import getsize, join
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
-import utils.my_bencode as my_bencode
+from . import my_bencode
+from .config_sites import USER_DATA_PATH as USER_DATA_PATH
+from .commen_component import is_win as is_win
 
 str_list = ['TiB', 'GiB', 'MiB', 'KB', 'B']
-USER_DATA_PATH = './conf/config_chrome.json'
+# USER_DATA_PATH = './conf/config_browser.json'
 
 
 class ReseedPage(tk.Frame):
@@ -118,7 +120,7 @@ class ReseedPage(tk.Frame):
             full_name = parser[section]['full_name']
             download_torrent_by_keyword(keyword=keyword, driver=driver_, size=size)
 
-	    # 发现有的种子比较大，下载慢，所以要求等待下载完
+            # 发现有的种子比较大，下载慢，所以要求等待下载完
             sleep(2)
 
             while True:
@@ -208,15 +210,35 @@ def deal_keyword(string):
 
 def get_driver(savepath):
     with open(USER_DATA_PATH, 'r') as config_file:
-        user_data = json.load(config_file)['user_data']
+        json_data = json.load(config_file)
+        user_data = json_data['user_data']
         user_data = '/'.join(user_data.split('\\'))
-        user_data = '--user-data-dir=' + user_data
-        # print(user_data)
-        options = webdriver.ChromeOptions()
-        prefs = {'profile.default_content_settings.popups': 0, 'download.default_directory': savepath}
-        options.add_experimental_option('prefs', prefs)
-        options.add_argument(user_data)
-        driver = webdriver.Chrome(executable_path='chromedriver.exe', chrome_options=options)
+        browser = json_data['browser']
+        if browser == 'Firefox':
+            options = webdriver.FirefoxOptions()
+            profile = webdriver.FirefoxProfile(user_data)
+            prefs = {'browser.download.folderList': 2, 'browser.download.dir': savepath,
+                     'browser.download.manager.showWhenStarting': False,
+                     'browser.helperApps.neverAsk.saveToDisk': 'application/octet-stream'}
+            profile.set_preference(prefs)
+            if is_win:
+                options.binary_location = 'C:/Program Files/Mozilla Firefox/firefox.exe'
+                driver = webdriver.Firefox(options=options, executable_path='bin/geckodriver.exe',
+                                           firefox_profile=profile)
+            else:
+                driver = webdriver.Firefox(options=options, executable_path='bin/geckodriver',
+                                           firefox_profile=profile)
+        elif browser == 'Chrome':
+            user_data = '--user-data-dir=' + user_data
+            options = webdriver.ChromeOptions()
+            options.add_argument(user_data)
+            prefs = {'profile.default_content_settings.popups': 0, 'download.default_directory': savepath}
+            options.add_experimental_option('prefs', prefs)
+            if is_win:
+                options.binary_location = 'C:/Program Files/Google Chrome/chrome.exe'
+                driver = webdriver.Chrome(executable_path='bin/chromedriver.exe', options=options)
+            else:
+                driver = webdriver.Chrome(executable_path='bin/chromedriver', options=options)
 
     return driver
 

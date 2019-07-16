@@ -8,3 +8,9 @@ bs4
 html2bbcode
 psutil
 pymediainfo
+
+# windows
+pypiwin32
+
+# gen.py
+lxml

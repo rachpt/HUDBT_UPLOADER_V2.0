@@ -10,11 +10,12 @@ import tkinter.scrolledtext
 import re
 import os
 
-import utils.commen_component as commen_component
-import utils.get_douban_info as get_douban_info
-import utils.get_media_info as get_media_info
-import utils.autoseed_methods as autoseed_methods
-import utils.html_handler as html_handler
+from . import commen_component
+from . import get_douban_info
+from . import get_media_info
+from . import autoseed_methods
+from . import html_handler
+from .commen_component import is_win as is_win
 
 
 TITLE_FONT = ("Helvetica", 18, "bold")
@@ -176,7 +177,7 @@ class HandUploadPage(tk.Frame):
                                   new_filename)
             new_filename = ' '.join(new_filename.split('.')).strip()
             self.raw_info['filename'] = new_filename
-            if commen_component.is_win:
+            if is_win:
                 back_up_path = self.config_dl['cache_path']+'\\%s.torrent' % new_filename
             else:
                 back_up_path = self.config_dl['cache_path']+'/%s.torrent' % new_filename
@@ -213,7 +214,9 @@ class HandUploadPage(tk.Frame):
                 self.raw_info['download_path'] = self.var_video_dir.get()
                 file_path = commen_component.parser_torrent(self.raw_info['torrent_path'])
                 self.video_path = os.path.join(self.var_video_dir.get(), file_path)
-                video_name = self.video_path.split('\\')[-1] if commen_component.is_win else self.video_path.split('/')[-1]
+                video_name = self.video_path.split('/')[-1]
+                if is_win:
+                    video_name = video_name.split('\\')[-1]
                 try:
                     video_info = get_media_info.get_video_info(self.video_path)
                 except Exception as exc:

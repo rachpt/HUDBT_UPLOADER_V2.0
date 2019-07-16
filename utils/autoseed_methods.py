@@ -154,7 +154,9 @@ class AutoSeed (threading.Thread):
         if not self.raw_info['descr_rss']:
             if self.raw_info['douban_info']:
                 try:
-                    video_name = abs_file_path.split('\\')[-1] if self.is_win else abs_file_path.split('/')[-1]
+                    video_name = abs_file_path.split('/')[-1]
+                    if AutoSeed.is_win:
+                        video_name = video_name.split('\\')[-1]
                     img_name = video_name + '.jpg'
                     img_name = re.sub('^\[.*?\]\.|[\u4e00-\u9fff]', '', img_name)
                     abs_img_path = self.config_dl['img_path'] + '/' + img_name
@@ -228,7 +230,7 @@ class AutoSeed (threading.Thread):
             filename = '%s_%s' % (pt_site['abbr'], tid)
 
         self.raw_info['filename'] = filename
-        if self.is_win:
+        if AutoSeed.is_win:
             origin_file_path = self.config_dl['cache_path'] + '\\%s.torrent' % filename
         else:
             origin_file_path = self.config_dl['cache_path'] + '/%s.torrent' % filename
@@ -313,7 +315,7 @@ class AutoSeed (threading.Thread):
             raw_info['type_'] = 430
 
         if raw_info['descr_rss']:
-            raw_info['descr'] = raw_info['descr_rss'] + raw_info['recommand']
+            raw_info['descr'] = raw_info['descr_rss']
         else:
             if raw_info['douban_info']:
                 raw_info['descr'] = raw_info['douban_info'] + raw_info['nfo'] + raw_info['picture_info']
